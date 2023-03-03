@@ -1,10 +1,8 @@
 name: linux-build
 on:
-  workflow_dispatch:
   pull_request:
-    types:
-      - opened
-  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -20,7 +18,7 @@ jobs:
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
           xmake-version: branch@master
-          actions-cache-folder: ".xmake-cache"
+          actions-cache-folder: '.xmake-cache'
 
       - name: Config
         run: |
