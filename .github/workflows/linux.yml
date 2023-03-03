@@ -20,7 +20,8 @@ jobs:
 
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
-          xmake-version: latest
+          xmake-version: branch@master
+          actions-cache-folder: ".xmake-cache"
 
       - name: Config
         run: |
