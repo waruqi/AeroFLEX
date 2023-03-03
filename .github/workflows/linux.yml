@@ -16,7 +16,7 @@ jobs:
         compiler: ["--toolchain=gcc"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
