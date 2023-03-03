@@ -17,6 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
 
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
