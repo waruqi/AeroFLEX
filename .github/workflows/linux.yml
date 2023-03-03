@@ -1,61 +1,37 @@
-name: linux
+name: Linux
 
 on:
   pull_request:
   push:
-  release:
-    types: [published]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [ubuntu-latest]
-        arch: [x86_64]
-        compiler: ["--toolchain=g++"]
+        kind: [static, shared]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Get current date as package key
-        id: cache_key
-        run: echo "key=$(date +'%W')" >> $GITHUB_OUTPUT
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set xmake env
-        run: echo "XMAKE_GLOBALDIR=${{ runner.workspace }}/xmake-global" >> $GITHUB_ENV
-
-      # Install xmake
-      - name: Setup xmake
-        uses: xmake-io/github-action-setup-xmake@v1
+      - uses: actions/checkout@v1
+      - uses: xmake-io/github-action-setup-xmake@v1
         with:
-          xmake-version: latest
-          actions-cache-folder: .xmake-cache-W${{ steps.cache_key.outputs.key }}
+          xmake-version: branch@dev
 
-      # Update xmake repository (in order to have the file that will be cached)
-      - name: Update xmake repository
-        run: xmake repo --update
-
-      # Fetch xmake dephash
-      - name: Retrieve dependencies hash
-        id: dep_hash
-        run:
-          keys=$(echo $(xmake l utils.ci.packageskey) | tr '\n' ' ')
-          echo "hash=$keys" >> $GITHUB_OUTPUT
-
-      # Cache xmake dependencies
-      - name: Retrieve cached xmake dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.XMAKE_GLOBALDIR }}/.xmake/packages
-          key: Linux-${{ matrix.arch }}-${{ matrix.mode }}-${{ steps.dep_hash.outputs.hash }}-W${{ steps.cache_key.outputs.key }}
-
-      - name: Config
+      - name: Installation
         run: |
-          xmake f -y -m release ${{ matrix.compiler }}
+          # TODO we will remove it later
+          sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60
+          sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-9 60
+          sudo update-alternatives --set g++ /usr/bin/g++-9
+          sudo update-alternatives --set gcc /usr/bin/gcc-9
+          sudo update-alternatives --set cpp /usr/bin/cpp-9
 
-      - name: Build
+      - name: Tests
         run: |
-          xmake -vD --yes
+          xmake f -k ${{ matrix.kind }} -y -vD
+          xmake -vD
+
