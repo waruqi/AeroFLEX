@@ -36,9 +36,6 @@ jobs:
           sudo update-alternatives --set gcc /usr/bin/gcc-9
           sudo update-alternatives --set cpp /usr/bin/cpp-9
 
-      - name: Config
-        run: |
-          xmake f -y
       - name: Build
         run: |
           xmake -vD
