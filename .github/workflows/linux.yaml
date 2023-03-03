@@ -1,14 +1,6 @@
 name: linux
 on:
-  workflow_dispatch:
-  pull_request:
-    types:
-      - opened
   push:
-    paths-ignore:
-        - '.github/workflows/windows.yaml'
-        - '.github/workflows/macos.yaml'
-        - 'README.md'
 
 jobs:
   build:
